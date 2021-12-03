@@ -91,7 +91,6 @@ class Game(Draw):
 		self.grid = []
 
 	def check_rows(self, player):
-		# checks rows
 		count = 0
 
 		for row in range(len(self.grid)):
@@ -106,7 +105,6 @@ class Game(Draw):
 					count = 0
 				
 	def check_columns(self, player):
-		# check columns
 		for col in range(len(self.grid[0])):
 			count = 0
 			for row in range(len(self.grid)):
@@ -119,7 +117,6 @@ class Game(Draw):
 					count = 0
 
 	def check_diagonal(self):
-		# checks diagonal
 		for row in range(len(self.grid)):
 			for col in range(len(self.grid[0])):
 
@@ -130,7 +127,7 @@ class Game(Draw):
 					and self.grid[row+3][col+3] == 1:
 						return True 
 
-	def check_winner(self, grid, player):
+	def check_winner(self, player):
 		''' checks the winner in the grid
 		returns true if player won
 		returns false if player lost
@@ -174,14 +171,15 @@ def main():
 	''' the main function where the game events take place '''
 
 	my_game = Game(5, 7)
-	my_game.make_window("Connect 4", "light sky blue", {"width":800, "height":600})  
+	my_game.make_window("Connect 4", "light sky blue", {"width":800, "height":600})
 	my_game.make_turtle('classic', "white", {"stretch_width":1, "stretch_length":1}, {"x":0, "y":0})
 	
 	grid = my_game.get_grid()
 	window = my_game.get_window()
 
 	my_game.draw_grid({"x":my_game.x_offset, "y":my_game.y_offset}, my_game.get_tile_size())
-	
+	window.update()
+
 	my_game.initialize()
 
 	while True:
