@@ -35,23 +35,23 @@ class Draw:
 	def make_window(self, window_title, bgcolor, dimensions):
 		''' this function creates a screen object and returns it '''
 
-		window = turtle.getscreen() # Set the window size
+		window = turtle.getscreen()
 		window.title(window_title)
 		window.bgcolor(bgcolor)
 		window.setup(dimensions["width"], dimensions["height"])
-		window.tracer(0) #turns off screen updates for the window Speeds up the game
+		window.tracer(0)
 		self.window = window
 
 	def make_turtle(self, shape, color, stretch_param, point):
 		''' creates a turtle and sets initial position '''
 
 		turt = turtle.Turtle()
-		turt.speed(0)    # Speed of animation, 0 is max
+		turt.speed(0)
 		turt.shape(shape)
 		turt.color(color)
 		turt.shapesize(stretch_param["stretch_width"], stretch_param["stretch_length"]) 
 		turt.penup()
-		turt.goto(point["x"], point["y"]) # Start position
+		turt.goto(point["x"], point["y"])
 		self.turt = turt
 
 	def move_to(self, point):
