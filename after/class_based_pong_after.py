@@ -10,14 +10,10 @@ import turtle
 
 
 class Paddle:
-    # implements a Pong game paddle
-
     def __init__(self, position):
         ''' initializes a paddle with a position '''
-
         self.x_position = position["x"]
         self.y_position = position["y"]
-
         self.turt = make_turtle("square", "white", {"width": 5, "length": 1}, {"x": self.x_position, "y": self.y_position})
 
 
@@ -29,9 +25,9 @@ class Paddle:
 
 
     def down(self):
-        y = self.turt.ycor() #Get the current y coordinate
-        y -= 20             #add 20px could also be y=y+20
-        self.turt.sety(y)    #move the paddle to the new y position
+        y = self.turt.ycor()
+        y -= 20
+        self.turt.sety(y)
         self.y_position = y
 
 
@@ -58,21 +54,17 @@ def make_turtle(shape, color, stretch_param, position):
 
 
 class Ball:
-    # implements a Pong game ball
-
     def __init__(self):
         ''' intializes a ball with default direction and position '''
         self.turt = make_turtle("square", "white", {"width": 1, "length": 1}, {"x": 0, "y": 0})
-        self.ball_dx = 0.0925 #speed in x direction
-        self.ball_dy = 0.0925 #speed in y direction
+        self.ball_dx = 0.0925
+        self.ball_dy = 0.0925
         self.x_position = 0
         self.y_position = 0
 
 
     def move(self):
         ''' moves the ball in x and y directions '''
-
-        # Move the ball
         self.turt.setx(self.turt.xcor() + self.ball_dx)
         self.turt.sety(self.turt.ycor() + self.ball_dy)
 
@@ -81,9 +73,7 @@ class Ball:
         self.check_top_bottom()
 
         
-
     def check_top_bottom(self):
-        # Top and bottom
         if self.turt.ycor() > 290:
             self.turt.sety(290)
             self.ball_dy *= -1
@@ -127,8 +117,8 @@ class Game:
         self.ball = None
         self.paddle_1 = None
         self.paddle_2 = None
-        self.player1_score = 0
-        self.player2_score = 0
+        self.score_player1 = 0
+        self.score_player2 = 0
         self.pen = None
         self.turt = None
 
@@ -142,91 +132,67 @@ class Game:
         window.tracer(0)
         self.window = window
 
-    # def 
+
+    def initialize(self):
+        self.make_window("Pong - A CS151 Reproduction!", "black", {"width":800, "height":600})
+        self.paddle_1 = Paddle({"x":-350, "y":0})
+        self.paddle_2 = Paddle({"x":350, "y":0})
+        self.ball = Ball()
+        self.pen = make_turtle("square", "white", {"width":1, "length":1}, {"x":0, "y":260})
+        self.pen.write("Player A: 0  Player B: 0", align="center", font=("Courier", 24, "normal"))
+        self.pen.hideturtle()
+
+
+    def keyboard_bindings(self):
+        self.window.listen()
+        self.window.onkeypress(self.paddle_1.up, "w")
+        self.window.onkeypress(self.paddle_1.down, "s")
+        self.window.onkeypress(self.paddle_2.up, "Up")
+        self.window.onkeypress(self.paddle_2.down, "Down")
+
+
+    def border_checking(self):
+        if self.ball.xcor() > 350:
+            self.score_player1 += 1
+            self.pen.clear()
+            self.pen.write("Player A: "+ str(self.score_player1) + "  Player B: "+ str(self.score_player2), align="center", font=("Courier", 24, "normal"))
+            self.ball.goto(0, 0)
+            self.ball.ball_dx *= -1
+
+        elif self.ball.xcor() < -350:
+            self.score_player2 += 1
+            self.pen.clear()
+            self.pen.write("Player A: "+ str(self.score_player1) + "  Player B: "+ str(self.score_player2), align="center", font=("Courier", 24, "normal"))
+            self.ball.goto(0, 0)
+            self.ball.ball_dx *= -1
+
+
+    def check_collision(self):
+        if self.ball.xcor() < -340 and self.ball.xcor() > -350 and self.ball.ycor() < self.paddle_1.ycor() + 50 and self.ball.ycor() > self.paddle_1.ycor() - 50:
+            self.ball.setx(-340)
+            self.ball.ball_dx *= -1.5
+        
+        elif self.ball.xcor() > 340 and self.ball.xcor() < 350 and self.ball.ycor() < self.paddle_2.ycor() + 50 and self.ball.ycor() > self.paddle_2.ycor() - 50:
+            self.ball.setx(340)
+            self.ball.ball_dx *= -1.5
+
+
+    def play(self):
+        self.window.update()
+        self.ball.move()
+        self.border_checking()
+        self.check_collision()
+            
 
 def main():
     ''' the main function where the game events take place '''
-
     pong_game = Game()
-    window = pong_game.make_window("Pong - A CS151 Reproduction!", "black", {"width": 800, "height": 600})
-    
-    # window = make_window("Pong - A CS151 Reproduction!", "black", {"width": 800, "height": 600})
+    pong_game.initialize()
+    pong_game.keyboard_bindings()
 
-    # Score
-    score_player1 = pong_game.player1_score
-    score_player2 = pong_game.player2_score
-
-    # paddels
-    pong_game.paddle_1 = Paddle({"x":-350, "y":0})
-    pong_game.paddle_2 = Paddle({"x":350, "y":0})
-
-    paddle_1 = pong_game.paddle_1
-    paddle_2 = pong_game.paddle_2
-
-    # paddle_1 = Paddle({"x":-350, "y":0})
-    # paddle_2 = Paddle({"x": 350, "y": 0})
-
-    # ball
-    pong_game.ball = Ball()
-    ball = pong_game.ball
-    # ball = Ball()
-
-    # Pen
-    pen = make_turtle("square", "white", {"width": 1, "length": 1}, {"x": 0, "y": 260})
-    pen.write("Player A: 0  Player B: 0", align="center", font=("Courier", 24, "normal"))
-    pen.hideturtle()
-
-    # Keyboard bindings
-    window.listen() #Listen for keyboard input
-    window.onkeypress(pong_game.paddle_1.up, "w") #when you press w run paddle_a_up
-    window.onkeypress(pong_game.paddle_1.down, "s")
-    window.onkeypress(pong_game.paddle_2.up, "Up")
-    window.onkeypress(pong_game.paddle_2.down, "Down")
-
-    # Main game loop
     while True:
-        window.update() #This is the update to offset the wn.tracer(0)
-
-        ball.move()
-
-        # Border checking    
-        # Left and right
-        if ball.xcor() > 350:
-            score_player1 += 1
-            pen.clear()
-            pen.write("Player A: "+ str(score_player1) + "  Player B: "+ str(score_player2), align="center", font=("Courier", 24, "normal"))
-            ball.goto(0, 0)
-            ball.ball_dx *= -1
-
-        elif ball.xcor() < -350:
-            score_player2 += 1
-            pen.clear()
-            pen.write("Player A: "+ str(score_player1) + "  Player B: "+ str(score_player2), align="center", font=("Courier", 24, "normal"))
-            ball.goto(0, 0)
-            ball.ball_dx *= -1
-
-        # Paddle and ball collisions
-        if ball.xcor() < -340 and ball.xcor() > -350 and ball.ycor() < paddle_1.ycor() + 50 and ball.ycor() > paddle_1.ycor() - 50:
-            ball.setx(-340)
-            ball.ball_dx *= -1.5
-        
-        elif ball.xcor() > 340 and ball.xcor() < 350 and ball.ycor() < paddle_2.ycor() + 50 and ball.ycor() > paddle_2.ycor() - 50:
-            ball.setx(340)
-            ball.ball_dx *= -1.5
-
-
+        pong_game.play()
 
 
 if __name__ == "__main__":
 	main()
-
-
-'''
-classes:
-
-    paddle
-    window
-    draw : make_turtle(), make_window()
-
-
-'''
