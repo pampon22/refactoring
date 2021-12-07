@@ -45,13 +45,23 @@ class Paddle:
         return self.turt.ycor()
 
 
+def make_turtle(shape, color, stretch_param, position):
+    ''' creates a turtle and sets initial position '''
+    turt = turtle.Turtle()
+    turt.speed(0)
+    turt.shape(shape)
+    turt.color(color)
+    turt.shapesize(stretch_param["width"], stretch_param["length"]) 
+    turt.penup()
+    turt.goto(position["x"], position["y"])
+    return turt
+
 
 class Ball:
     # implements a Pong game ball
 
     def __init__(self):
         ''' intializes a ball with default direction and position '''
-
         self.turt = make_turtle("square", "white", {"width": 1, "length": 1}, {"x": 0, "y": 0})
         self.ball_dx = 0.0925 #speed in x direction
         self.ball_dy = 0.0925 #speed in y direction
@@ -68,7 +78,11 @@ class Ball:
 
         self.x_position = self.turt.xcor()
         self.y_position = self.turt.ycor()
+        self.check_top_bottom()
 
+        
+
+    def check_top_bottom(self):
         # Top and bottom
         if self.turt.ycor() > 290:
             self.turt.sety(290)
@@ -78,7 +92,6 @@ class Ball:
             self.turt.sety(-290)
             self.ball_dy *= -1
 
-    
     def xcor(self):
         ''' returns turtle x_cord '''
         return self.turt.xcor()
@@ -102,46 +115,61 @@ class Ball:
         self.x_position = x_cor
 
 
-
-def make_window(window_title, bgcolor, dimensions):
-    '''this function creates a screen object and returns it'''
-
-    window = turtle.getscreen()
-    window.title(window_title)
-    window.bgcolor(bgcolor)
-    window.setup(dimensions["width"], dimensions["height"])
-    window.tracer(0)
-    return window
+    def sety(self, y_cor):
+        ''' sets the ball y position '''
+        self.turt.sety(y_cor)
+        self.x_position = y_cor    
 
 
-def make_turtle(shape, color, stretch_param, position):
-    ''' creates a turtle and sets initial position '''
+class Game:
+    def __init__(self):
+        self.window = None
+        self.ball = None
+        self.paddle_1 = None
+        self.paddle_2 = None
+        self.player1_score = 0
+        self.player2_score = 0
+        self.pen = None
+        self.turt = None
 
-    turt = turtle.Turtle()
-    turt.speed(0)
-    turt.shape(shape)
-    turt.color(color)
-    turt.shapesize(stretch_param["width"], stretch_param["length"]) 
-    turt.penup()
-    turt.goto(position["x"], position["y"])
-    return turt
 
+    def make_window(self, window_title, bgcolor, dimensions):
+        '''this function creates a screen object and returns it'''
+        window = turtle.getscreen()
+        window.title(window_title)
+        window.bgcolor(bgcolor)
+        window.setup(dimensions["width"], dimensions["height"])
+        window.tracer(0)
+        self.window = window
+
+    # def 
 
 def main():
     ''' the main function where the game events take place '''
 
-    window = make_window("Pong - A CS151 Reproduction!", "black", {"width": 800, "height": 600})
+    pong_game = Game()
+    window = pong_game.make_window("Pong - A CS151 Reproduction!", "black", {"width": 800, "height": 600})
+    
+    # window = make_window("Pong - A CS151 Reproduction!", "black", {"width": 800, "height": 600})
 
     # Score
-    score_player1 = 0
-    score_player2 = 0
+    score_player1 = pong_game.player1_score
+    score_player2 = pong_game.player2_score
 
     # paddels
-    paddle_1 = Paddle({"x":-350, "y":0})
-    paddle_2 = Paddle({"x": 350, "y": 0})
+    pong_game.paddle_1 = Paddle({"x":-350, "y":0})
+    pong_game.paddle_2 = Paddle({"x":350, "y":0})
+
+    paddle_1 = pong_game.paddle_1
+    paddle_2 = pong_game.paddle_2
+
+    # paddle_1 = Paddle({"x":-350, "y":0})
+    # paddle_2 = Paddle({"x": 350, "y": 0})
 
     # ball
-    ball = Ball()
+    pong_game.ball = Ball()
+    ball = pong_game.ball
+    # ball = Ball()
 
     # Pen
     pen = make_turtle("square", "white", {"width": 1, "length": 1}, {"x": 0, "y": 260})
@@ -150,10 +178,10 @@ def main():
 
     # Keyboard bindings
     window.listen() #Listen for keyboard input
-    window.onkeypress(paddle_1.up, "w") #when you press w run paddle_a_up
-    window.onkeypress(paddle_1.down, "s")
-    window.onkeypress(paddle_2.up, "Up")
-    window.onkeypress(paddle_2.down, "Down")
+    window.onkeypress(pong_game.paddle_1.up, "w") #when you press w run paddle_a_up
+    window.onkeypress(pong_game.paddle_1.down, "s")
+    window.onkeypress(pong_game.paddle_2.up, "Up")
+    window.onkeypress(pong_game.paddle_2.down, "Down")
 
     # Main game loop
     while True:
